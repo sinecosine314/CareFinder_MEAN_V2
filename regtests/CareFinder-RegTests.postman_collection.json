@@ -1,0 +1,1579 @@
+{
+	"info": {
+		"_postman_id": "6e633a27-192b-418c-9ba7-f678823f44d7",
+		"name": "CareFinder-RegTests",
+		"description": "This collection is a set of regression/unit tests for the CareFinder.\n\nTests are designed to leave the database in the same state that it was in before any tests were run.  For example, it a PIOST request was run to create a resource, a DELETE will also be run to delete the created resource.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CF-Hospitals-RegTest-store",
+			"item": [
+				{
+					"name": "Create a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88946b90-9e4f-44f2-b41e-3e818cc90068",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(201);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data;",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"pm.globals.set(\"hospitalId\", jsonData._id);",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerId\": \"999999\",\n  \"name\": \"TEST MEDICAL CENTER\",\n  \"address\": \"1122 BOOGIE BOOGIE AVENUE\",\n  \"city\": \"MERTOPLIS\",\n  \"state\": \"WI\",\n  \"zipCode\": \"12345\",\n  \"county\": \"COUNTY\",\n  \"phoneNumber\": \"1112223333\",\n  \"type\": \"Acute Care Hospitals\",\n  \"ownership\": \"Government - Hospital District or Authority\",\n  \"emergencyServices\": \"true\",\n  \"location\": {\n    \"humanAddress\": \"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\",\n    \"latitude\": \"31.215379379000467\",\n    \"longitude\": \"-85.36146587999968\",\n    \"needsRecoding\": \"false\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							]
+						},
+						"description": "Create a new hospital."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff961900-4a20-4c9a-9bc3-dcff1df70247",
+								"exec": [
+									"// Needs to be 204 NO CONTENT",
+									"pm.test(\"Status code is 204 CREATED\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Remove the global variables that were set",
+									"pm.globals.unset(\"hospitalId\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Regression test for the store() method.  The test creates a new Hospital object, and tests that the return status, header and body are what is expected.  The resopurce is then deleted.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46cd92f1-6aa2-495b-b686-79b7fcb4889a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b63be10-518d-4240-9dd8-fd2de710aec0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CF-Hospitals-RegTest-show",
+			"item": [
+				{
+					"name": "Create a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88946b90-9e4f-44f2-b41e-3e818cc90068",
+								"exec": [
+									"// Needs to be 201 CREATED",
+									"pm.test(\"Status code is 201 CREATED\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Save the course id returned from the request",
+									"var jsonData = pm.response.json().data;",
+									"if (jsonData)",
+									"{",
+									"    pm.globals.set(\"hospitalId\", jsonData._id);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerId\": \"999999\",\n  \"name\": \"TEST MEDICAL CENTER\",\n  \"address\": \"1122 BOOGIE BOOGIE AVENUE\",\n  \"city\": \"MERTOPLIS\",\n  \"state\": \"WI\",\n  \"zipCode\": \"12345\",\n  \"county\": \"COUNTY\",\n  \"phoneNumber\": \"1112223333\",\n  \"type\": \"Acute Care Hospitals\",\n  \"ownership\": \"Government - Hospital District or Authority\",\n  \"emergencyServices\": \"true\",\n  \"location\": {\n    \"humanAddress\": \"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\",\n    \"latitude\": \"31.215379379000467\",\n    \"longitude\": \"-85.36146587999968\",\n    \"needsRecoding\": \"false\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							]
+						},
+						"description": "Create a new hospital.  Assumes the POST request has already been tested.  No scripts are run on the POST request."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data;",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "44c2057c-68dc-4c57-818d-7d75e1598fd2",
+								"exec": [
+									"// Needs to be 204 NO CONTENT",
+									"pm.test(\"Status code is 204 CREATED\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Remove the global variables that were set",
+									"pm.globals.unset(\"hospitalId\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Regression test for the show() method.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46cd92f1-6aa2-495b-b686-79b7fcb4889a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b63be10-518d-4240-9dd8-fd2de710aec0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CF-Hospitals-RegTest-index",
+			"item": [
+				{
+					"name": "Create a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88946b90-9e4f-44f2-b41e-3e818cc90068",
+								"exec": [
+									"// Needs to be 201 CREATED",
+									"pm.test(\"Status code is 201 CREATED\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Save the course id returned from the request",
+									"var jsonData = pm.response.json().data;",
+									"if (jsonData)",
+									"{",
+									"    pm.globals.set(\"hospitalId\", jsonData._id);",
+									"    pm.globals.set(\"providerId\", jsonData.providerId);",
+									"    pm.globals.set(\"name\", jsonData.name);",
+									"    pm.globals.set(\"city\", jsonData.city);",
+									"    pm.globals.set(\"state\", jsonData.state);",
+									"    pm.globals.set(\"zipCode\", jsonData.zipCode);",
+									"    pm.globals.set(\"county\", jsonData.county);",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerId\": \"999999\",\n  \"name\": \"TEST MEDICAL CENTER\",\n  \"address\": \"1122 BOOGIE BOOGIE AVENUE\",\n  \"city\": \"MERTOPLIS\",\n  \"state\": \"WI\",\n  \"zipCode\": \"12345\",\n  \"county\": \"COUNTY\",\n  \"phoneNumber\": \"1112223333\",\n  \"type\": \"Acute Care Hospitals\",\n  \"ownership\": \"Government - Hospital District or Authority\",\n  \"emergencyServices\": \"true\",\n  \"location\": {\n    \"humanAddress\": \"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\",\n    \"latitude\": \"31.215379379000467\",\n    \"longitude\": \"-85.36146587999968\",\n    \"needsRecoding\": \"false\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							]
+						},
+						"description": "Create a new hospital.  Assumes the POST request has already been tested.  No scripts are run on the POST request."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by providerId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?providerId={{providerId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "providerId",
+									"value": "{{providerId}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?name={{name}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{name}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by city",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?city={{city}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "{{city}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by state",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?state={{state}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "state",
+									"value": "{{state}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by zipCode",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?zipCode={{zipCode}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "zipCode",
+									"value": "{{zipCode}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Read a Hospital by county",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab25f40-ce52-4688-934e-414facd2071b",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data[0];",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckHospitalDocument = eval(pm.globals.get(\"checkHospitalDocument\"));",
+									"thisCheckHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals?county={{county}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							],
+							"query": [
+								{
+									"key": "county",
+									"value": "{{county}}"
+								}
+							]
+						},
+						"description": "Retrieve an existing course competency."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "44c2057c-68dc-4c57-818d-7d75e1598fd2",
+								"exec": [
+									"// Needs to be 204 NO CONTENT",
+									"pm.test(\"Status code is 204 CREATED\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Remove the global variables that were set",
+									"pm.globals.unset(\"hospitalId\");",
+									"pm.globals.unset(\"providerId\");",
+									"pm.globals.unset(\"name\");",
+									"pm.globals.unset(\"city\");",
+									"pm.globals.unset(\"state\");",
+									"pm.globals.unset(\"zipCode\");",
+									"pm.globals.unset(\"county\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Regression test for the show() method.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46cd92f1-6aa2-495b-b686-79b7fcb4889a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b63be10-518d-4240-9dd8-fd2de710aec0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CF-Hospitals-RegTest-patch",
+			"item": [
+				{
+					"name": "Create a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88946b90-9e4f-44f2-b41e-3e818cc90068",
+								"exec": [
+									"// Needs to be 201 CREATED",
+									"pm.test(\"Status code is 201 CREATED\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Save the course id returned from the request",
+									"var jsonData = pm.response.json().data;",
+									"if (jsonData)",
+									"{",
+									"    pm.globals.set(\"hospitalId\", jsonData._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerId\": \"999999\",\n  \"name\": \"TEST MEDICAL CENTER\",\n  \"address\": \"1122 BOOGIE BOOGIE AVENUE\",\n  \"city\": \"MERTOPLIS\",\n  \"state\": \"WI\",\n  \"zipCode\": \"12345\",\n  \"county\": \"COUNTY\",\n  \"phoneNumber\": \"1112223333\",\n  \"type\": \"Acute Care Hospitals\",\n  \"ownership\": \"Government - Hospital District or Authority\",\n  \"emergencyServices\": \"true\",\n  \"location\": {\n    \"humanAddress\": \"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\",\n    \"latitude\": \"31.215379379000467\",\n    \"longitude\": \"-85.36146587999968\",\n    \"needsRecoding\": \"false\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							]
+						},
+						"description": "Create a new hospital."
+					},
+					"response": []
+				},
+				{
+					"name": "Patch a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85dc3bb-fb0b-4f60-86d0-c6ebebdd1a63",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check patched response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data;",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckPatchedHospitalDocument = eval(pm.globals.get(\"checkPatchedHospitalDocument\"));",
+									"thisCheckPatchedHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"AAAAAAAAAA\",\n  \"address\": \"BBBBBBBBBB\",\n  \"city\": \"CCCCCCCCCC\",\n  \"state\": \"IL\",\n  \"zipCode\": \"54321\",\n  \"county\": \"NEXTCOUNTY\",\n  \"phoneNumber\": \"4445556666\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff961900-4a20-4c9a-9bc3-dcff1df70247",
+								"exec": [
+									"// Needs to be 204 NO CONTENT",
+									"pm.test(\"Status code is 204 CREATED\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Remove the global variables that were set",
+									"pm.globals.unset(\"hospitalId\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Regression test for the patch() method.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46cd92f1-6aa2-495b-b686-79b7fcb4889a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b63be10-518d-4240-9dd8-fd2de710aec0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "CF-Hospitals-RegTest-update",
+			"item": [
+				{
+					"name": "Create a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "88946b90-9e4f-44f2-b41e-3e818cc90068",
+								"exec": [
+									"// Needs to be 201 CREATED",
+									"pm.test(\"Status code is 201 CREATED\", () => {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Save the course id returned from the request",
+									"var jsonData = pm.response.json().data;",
+									"if (jsonData)",
+									"{",
+									"    pm.globals.set(\"hospitalId\", jsonData._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"providerId\": \"999999\",\n  \"name\": \"TEST MEDICAL CENTER\",\n  \"address\": \"1122 BOOGIE BOOGIE AVENUE\",\n  \"city\": \"MERTOPLIS\",\n  \"state\": \"WI\",\n  \"zipCode\": \"12345\",\n  \"county\": \"COUNTY\",\n  \"phoneNumber\": \"1112223333\",\n  \"type\": \"Acute Care Hospitals\",\n  \"ownership\": \"Government - Hospital District or Authority\",\n  \"emergencyServices\": \"true\",\n  \"location\": {\n    \"humanAddress\": \"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\",\n    \"latitude\": \"31.215379379000467\",\n    \"longitude\": \"-85.36146587999968\",\n    \"needsRecoding\": \"false\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals"
+							]
+						},
+						"description": "Create a new hospital."
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85dc3bb-fb0b-4f60-86d0-c6ebebdd1a63",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(200);",
+									"",
+									"// Check patched response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data;",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckUpdatedHospitalDocument = eval(pm.globals.get(\"checkUpdatedHospitalDocument\"));",
+									"thisCheckUpdatedHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"AAAAAAAAAA\",\n  \"address\": \"BBBBBBBBBB\",\n  \"city\": \"CCCCCCCCCC\",\n  \"state\": \"IL\",\n  \"zipCode\": \"54321\",\n  \"county\": \"NEXTCOUNTY\",\n  \"phoneNumber\": \"4445556666\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						},
+						"description": "Do a PUT request for an existing resource."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ff961900-4a20-4c9a-9bc3-dcff1df70247",
+								"exec": [
+									"// Needs to be 204 NO CONTENT",
+									"pm.test(\"Status code is 204 CREATED\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									"// Remove the global variables that were set",
+									"pm.globals.unset(\"hospitalId\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update a Hospital",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d85dc3bb-fb0b-4f60-86d0-c6ebebdd1a63",
+								"exec": [
+									"/*",
+									"",
+									"checkHeader and checkHospitalDocument are defined in the CareFinder-RegTest ",
+									"collections Pre-request scripts.",
+									"",
+									"*/",
+									"",
+									"// Check the response header",
+									"thisCheckHeader = eval(pm.globals.get(\"checkHeader\"));",
+									"thisCheckHeader(201);",
+									"",
+									"// Check patched response body to make sure we got the correct document",
+									"const jsonData = pm.response.json().data;",
+									"",
+									"pm.test(\"Body has data property\", () => {",
+									"    pm.expect(jsonData);",
+									"});",
+									"",
+									"thisCheckUpdatedHospitalDocument = eval(pm.globals.get(\"checkUpdatedHospitalDocument\"));",
+									"thisCheckUpdatedHospitalDocument(jsonData);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"AAAAAAAAAA\",\n  \"address\": \"BBBBBBBBBB\",\n  \"city\": \"CCCCCCCCCC\",\n  \"state\": \"IL\",\n  \"zipCode\": \"54321\",\n  \"county\": \"NEXTCOUNTY\",\n  \"phoneNumber\": \"4445556666\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}{{base_path}}/hospitals/{{hospitalId}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}{{base_path}}",
+							"path": [
+								"hospitals",
+								"{{hospitalId}}"
+							]
+						},
+						"description": "Do a PUT request for an non-existing resource. This results in a new resource being created."
+					},
+					"response": []
+				}
+			],
+			"description": "Regression test for the update() method.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46cd92f1-6aa2-495b-b686-79b7fcb4889a",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1b63be10-518d-4240-9dd8-fd2de710aec0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "11f4b258-8e19-4265-896c-9ee3b57c1011",
+				"type": "text/javascript",
+				"exec": [
+					"/*",
+					"checkHeader - This function checks the response header for the correct response status,",
+					"the presense of a Content-Type, and a correct Content-Type value.",
+					"*/",
+					"postman.setGlobalVariable(\"checkHeader\", (statusCode) => {",
+					"  // Needs to be 200 CREATED",
+					"  pm.test(\"Status code is \" + statusCode , () => {",
+					"    pm.response.to.have.status(statusCode);",
+					"  });",
+					"",
+					"  // Needs an appliction/json content-type",
+					"  pm.test(\"Content-Type is present\", () => {",
+					"    pm.response.to.have.header(\"Content-Type\");",
+					"  });",
+					"",
+					"  // Needs an appliction/json content-type",
+					"  pm.test(\"Content-Type is 'application/json; charset=utf-8'\", () => {",
+					"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\")",
+					"  });",
+					"});",
+					"",
+					"/*",
+					"checkHospitalDocument - This function checks the fields of the given document",
+					"to ensure it is the document that was expected.",
+					"*/",
+					"postman.setGlobalVariable(\"checkHospitalDocument\", (doc) => {",
+					"  // Check for a proper hospital id",
+					"  pm.test(\"Body has proper id\", () => {",
+					"    pm.expect(doc._id).to.eql(pm.globals.get(\"hospitalId\"));",
+					"  });",
+					"",
+					"  // Check for a proper providerId",
+					"  pm.test(\"Body has proper provider id\", () => {",
+					"    pm.expect(jsonData.providerId).to.eql(999999);",
+					"  });",
+					"",
+					"  // Check for a proper name",
+					"  pm.test(\"Body has proper hospital name\", () => {",
+					"    pm.expect(jsonData.name).to.eql(\"TEST MEDICAL CENTER\");",
+					"  });",
+					"",
+					"  // Check for a proper naddress",
+					"  pm.test(\"Body has proper address\", () => {",
+					"    pm.expect(jsonData.address).to.eql(\"1122 BOOGIE BOOGIE AVENUE\");",
+					"  });",
+					"",
+					"  // Check for a proper city",
+					"  pm.test(\"Body has proper city\", () => {",
+					"    pm.expect(jsonData.city).to.eql(\"MERTOPLIS\");",
+					"  });",
+					"",
+					"  // Check for a proper state",
+					"  pm.test(\"Body has proper state\", () => {",
+					"    pm.expect(jsonData.state).to.eql(\"WI\");",
+					"  });",
+					"",
+					"  // Check for a proper zip code",
+					"  pm.test(\"Body has proper zip code\", () => {",
+					"    pm.expect(jsonData.zipCode).to.eql(\"12345\");",
+					"  });",
+					"",
+					"  // Check for a proper county",
+					"  pm.test(\"Body has proper county\", () => {",
+					"    pm.expect(jsonData.county).to.eql(\"COUNTY\");",
+					"  });",
+					"",
+					"  // Check for a proper phone number",
+					"  pm.test(\"Body has proper phone number\", () => {",
+					"    pm.expect(jsonData.phoneNumber).to.eql(\"1112223333\");",
+					"  });",
+					"",
+					"  // Check for a proper type",
+					"  pm.test(\"Body has proper type\", () => {",
+					"    pm.expect(jsonData.type).to.eql(\"Acute Care Hospitals\");",
+					"  });",
+					"",
+					"  // Check for a proper ownership",
+					"  pm.test(\"Body has proper ownership\", () => {",
+					"    pm.expect(jsonData.ownership).to.eql(\"Government - Hospital District or Authority\");",
+					"  });",
+					"",
+					"  // Check for proper emergency services",
+					"  pm.test(\"Body has proper emergency services\", () => {",
+					"    pm.expect(jsonData.emergencyServices).to.eql(\"true\");",
+					"  });",
+					"",
+					"  // Check for a proper location ovject",
+					"  pm.test(\"Body has location object\", () => {",
+					"    pm.expect(jsonData.location);",
+					"  });",
+					"",
+					"  // Check for a proper location > humanAddress",
+					"  pm.test(\"Body has proper location > humanAddress\", () => {",
+					"    pm.expect(jsonData.location.humanAddress).to.eql(\"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\");",
+					"  });",
+					"",
+					"  // Check for a proper location > latitude",
+					"  pm.test(\"Body has proper location > latitude\", () => {",
+					"    pm.expect(jsonData.location.latitude).to.eql(31.215379379000467);",
+					"  });",
+					"",
+					"  // Check for a proper location > longitude",
+					"  pm.test(\"Body has proper location > longitude\", () => {",
+					"    pm.expect(jsonData.location.longitude).to.eql(-85.36146587999968);",
+					"  });",
+					"",
+					"  // Check for a proper location > needsRecoding",
+					"  pm.test(\"Body has proper location > needsRecoding\", () => {",
+					"    pm.expect(jsonData.location.needsRecoding).to.eql(\"false\");",
+					"  });",
+					"",
+					"  // Check for a proper createdAt",
+					"  pm.test(\"Body has createdAt property\", () => {",
+					"    pm.expect(jsonData.createdAt);",
+					"  });",
+					"",
+					"  // Check for a proper updatedAt",
+					"  pm.test(\"Body has updatedAt property\", () => {",
+					"    pm.expect(jsonData.updatedAt);",
+					"  });",
+					"});",
+					"",
+					"/*",
+					"checkPatchedHospitalDocument - This function checks the fields of the patched document",
+					"to ensure it is the document that was expected.",
+					"*/",
+					"postman.setGlobalVariable(\"checkPatchedHospitalDocument\", (doc) => {",
+					"  // Check for a proper hospital id",
+					"  pm.test(\"Body has proper id\", () => {",
+					"    pm.expect(doc._id).to.eql(pm.globals.get(\"hospitalId\"));",
+					"  });",
+					"",
+					"  // Check for a proper providerId",
+					"  pm.test(\"Body has proper provider id\", () => {",
+					"    pm.expect(jsonData.providerId).to.eql(999999);",
+					"  });",
+					"",
+					"  // Check for a proper name",
+					"  pm.test(\"Body has proper hospital name\", () => {",
+					"    pm.expect(jsonData.name).to.eql(\"AAAAAAAAAA\");",
+					"  });",
+					"",
+					"  // Check for a proper naddress",
+					"  pm.test(\"Body has proper address\", () => {",
+					"    pm.expect(jsonData.address).to.eql(\"BBBBBBBBBB\");",
+					"  });",
+					"",
+					"  // Check for a proper city",
+					"  pm.test(\"Body has proper city\", () => {",
+					"    pm.expect(jsonData.city).to.eql(\"CCCCCCCCCC\");",
+					"  });",
+					"",
+					"  // Check for a proper state",
+					"  pm.test(\"Body has proper state\", () => {",
+					"    pm.expect(jsonData.state).to.eql(\"IL\");",
+					"  });",
+					"",
+					"  // Check for a proper zip code",
+					"  pm.test(\"Body has proper zip code\", () => {",
+					"    pm.expect(jsonData.zipCode).to.eql(\"54321\");",
+					"  });",
+					"",
+					"  // Check for a proper county",
+					"  pm.test(\"Body has proper county\", () => {",
+					"    pm.expect(jsonData.county).to.eql(\"NEXTCOUNTY\");",
+					"  });",
+					"",
+					"  // Check for a proper phone number",
+					"  pm.test(\"Body has proper phone number\", () => {",
+					"    pm.expect(jsonData.phoneNumber).to.eql(\"4445556666\");",
+					"  });",
+					"",
+					"  // Check for a proper type",
+					"  pm.test(\"Body has proper type\", () => {",
+					"    pm.expect(jsonData.type).to.eql(\"Acute Care Hospitals\");",
+					"  });",
+					"",
+					"  // Check for a proper ownership",
+					"  pm.test(\"Body has proper ownership\", () => {",
+					"    pm.expect(jsonData.ownership).to.eql(\"Government - Hospital District or Authority\");",
+					"  });",
+					"",
+					"  // Check for proper emergency services",
+					"  pm.test(\"Body has proper emergency services\", () => {",
+					"    pm.expect(jsonData.emergencyServices).to.eql(\"true\");",
+					"  });",
+					"",
+					"  // Check for a proper location ovject",
+					"  pm.test(\"Body has location object\", () => {",
+					"    pm.expect(jsonData.location);",
+					"  });",
+					"",
+					"  // Check for a proper location > humanAddress",
+					"  pm.test(\"Body has proper location > humanAddress\", () => {",
+					"    pm.expect(jsonData.location.humanAddress).to.eql(\"{\\\"address\\\":\\\"1122 BOOGIE BOOGIE AVENUE\\\",\\\"city\\\":\\\"MERTOPLIS\\\",\\\"state\\\":\\\"WI\\\",\\\"zip\\\":\\\"12345\\\"}\");",
+					"  });",
+					"",
+					"  // Check for a proper location > latitude",
+					"  pm.test(\"Body has proper location > latitude\", () => {",
+					"    pm.expect(jsonData.location.latitude).to.eql(31.215379379000467);",
+					"  });",
+					"",
+					"  // Check for a proper location > longitude",
+					"  pm.test(\"Body has proper location > longitude\", () => {",
+					"    pm.expect(jsonData.location.longitude).to.eql(-85.36146587999968);",
+					"  });",
+					"",
+					"  // Check for a proper location > needsRecoding",
+					"  pm.test(\"Body has proper location > needsRecoding\", () => {",
+					"    pm.expect(jsonData.location.needsRecoding).to.eql(\"false\");",
+					"  });",
+					"",
+					"  // Check for a proper createdAt",
+					"  pm.test(\"Body has createdAt property\", () => {",
+					"    pm.expect(jsonData.createdAt);",
+					"  });",
+					"",
+					"  // Check for a proper updatedAt",
+					"  pm.test(\"Body has updatedAt property\", () => {",
+					"    pm.expect(jsonData.updatedAt);",
+					"  });",
+					"});",
+					"",
+					"/*",
+					"checkUpdatedHospitalDocument - This function checks the fields of the patched document",
+					"to ensure it is the document that was expected.",
+					"*/",
+					"postman.setGlobalVariable(\"checkUpdatedHospitalDocument\", (doc) => {",
+					"  // Check for a proper hospital id",
+					"  pm.test(\"Body has proper id\", () => {",
+					"    pm.expect(doc._id).to.eql(pm.globals.get(\"hospitalId\"));",
+					"  });",
+					"",
+					"  // Check for a proper providerId",
+					"  pm.test(\"Body has proper provider id\", () => {",
+					"    pm.expect(jsonData.providerId).to.eql(999999);",
+					"  });",
+					"",
+					"  // Check for a proper name",
+					"  pm.test(\"Body has proper hospital name\", () => {",
+					"    pm.expect(jsonData.name).to.eql(\"AAAAAAAAAA\");",
+					"  });",
+					"",
+					"  // Check for a proper naddress",
+					"  pm.test(\"Body has proper address\", () => {",
+					"    pm.expect(jsonData.address).to.eql(\"BBBBBBBBBB\");",
+					"  });",
+					"",
+					"  // Check for a proper city",
+					"  pm.test(\"Body has proper city\", () => {",
+					"    pm.expect(jsonData.city).to.eql(\"CCCCCCCCCC\");",
+					"  });",
+					"",
+					"  // Check for a proper state",
+					"  pm.test(\"Body has proper state\", () => {",
+					"    pm.expect(jsonData.state).to.eql(\"IL\");",
+					"  });",
+					"",
+					"  // Check for a proper zip code",
+					"  pm.test(\"Body has proper zip code\", () => {",
+					"    pm.expect(jsonData.zipCode).to.eql(\"54321\");",
+					"  });",
+					"",
+					"  // Check for a proper county",
+					"  pm.test(\"Body has proper county\", () => {",
+					"    pm.expect(jsonData.county).to.eql(\"NEXTCOUNTY\")",
+					"  });",
+					"",
+					"  // Check for a proper phone number",
+					"  pm.test(\"Body has proper phone number\", () => {",
+					"    pm.expect(jsonData.phoneNumber).to.eql(\"4445556666\")",
+					"  });",
+					"",
+					"  // Check for a proper type",
+					"  pm.test(\"Type property not present\", () => {",
+					"    pm.expect(jsonData).to.not.have.property('type')",
+					"  });",
+					"",
+					"  // Check for a proper ownership",
+					"  pm.test(\"Ownership property not present\", () => {",
+					"    pm.expect(jsonData).to.not.have.property('ownership')",
+					"  });",
+					"",
+					"  // Check for proper emergency services",
+					"  pm.test(\"Emergency Services property not present\", () => {",
+					"    pm.expect(jsonData).to.not.have.property('emergencyServices')",
+					"  });",
+					"",
+					"  // Check for a proper location ovject",
+					"  pm.test(\"Location property not present\", () => {",
+					"    pm.expect(jsonData).to.not.have.property('location')",
+					"  });",
+					"",
+					"  // Check for a proper createdAt",
+					"  pm.test(\"Body has createdAt property\", () => {",
+					"    pm.expect(jsonData.createdAt);",
+					"  });",
+					"",
+					"  // Check for a proper updatedAt",
+					"  pm.test(\"Body has updatedAt property\", () => {",
+					"    pm.expect(jsonData.updatedAt);",
+					"  });",
+					"});",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6c8b7b01-f97b-46df-8dd4-a982d13bb34d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
