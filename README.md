@@ -12,7 +12,11 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 A copy of the GNU General Public License is distributed with this program in the file named "COPYING" in the project root.
-If not, plerase see <https://www.gnu.org/licenses/>.
+If not, please see <https://www.gnu.org/licenses/>.
+
+# Version
+
+1.0.0
 
 # Data
 
@@ -31,6 +35,22 @@ To im port the data, go to the `seeds` folder and type the following command:
 # Models
 
 The following data models are used by the API service.
+
+## Users
+
+`username` - type: String, required. The user's username.
+
+`email` - type: String, required. The user's email address.
+
+`role` - type: String, required, enumerated value of `admin`, `user`, `guest`. The user's role in the system.
+
+`firstname` - type: String. The user's first name.
+
+`lastname` - type: String. The user's last name.
+
+`salt` - type: String, generated.
+
+`hash` - type: String, generated.
 
 ## Hospitals
 
@@ -71,8 +91,69 @@ The following data models are used by the API service.
 The following section describes the routes supported by the CareFinfer API.
 It would be typical for this API to be implemented as a subdomain or a server.
 For example, `carefinder.company.com`.
-Also, all routes are prefaced with `.../api`.
-Thus, requests would look something like: `https://carefinder.company.com/api/...`.
+Also, all routes are prefaced with `.../api/v1`.
+Thus, requests would look something like: `https://carefinder.company.com/api/v1/...`.
+
+## Users
+
+The `users` routes support CRUD operations for users.
+
+### Endpoints
+
+The following are the endpoints for the `users` resource.
+
+`POST /users` - Create a new user resource given the information payload.
+
+`GET /users?<list of query parameters>` - Read user(s) resources in various ways. See Parameters below.
+
+`PUT /users?<list of query parameters>` - Update/create a specific user resource. Supported parameters: id, username and email.
+
+`PATCH /users?<list of query parameters>` - Update/patch a specific user resource. Supported parameters: id, username and email.
+
+`DELETE /users?<list of query parameters>` - Delete a specific user resource. Supported parameters: id, username and email.
+
+### Parameters
+
+`id={id}` - Specifies the unique identifier for a specific user.
+
+`username={username}` - Specifies the username of the user.
+
+`email={email}` - Specifies the email of the user.
+
+`firstname={firstname}` - Specifies the first name of the user(s).
+
+`lastname={lastname}` - Specifies the last name of the user(s).
+
+`role={role}` - Specifies the role of the user(s).
+
+### Payload
+
+This is an example of the user information that must be sent when crating a new user.
+
+```
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "firstname": "John",
+  "lastname": "Doe",
+  "password": "badpassword",
+  "role": "user",
+}
+```
+
+### Usage
+
+The following examples show how the `users` endpoint is used.
+
+`POST http://localhost:3000/users`
+
+`GET http://localhost:3000/users?firstname=john`
+
+`PUT http://localhost:3000/users?id=5fad777c032b26732e40b3e7`
+
+`PATCH http://localhost:3000/users?id=5fad777c032b26732e40b3e7`
+
+`DELETE http://localhost:3000/users?id=5fad777c032b26732e40b3e7`
 
 ## Hospitals
 

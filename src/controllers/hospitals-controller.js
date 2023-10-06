@@ -12,10 +12,10 @@
  */
 
 const config = require('../helpers/config-helper')
-const Hospital = require('../models/hospital-model')
+const Hospitals = require('../models/hospital-model')
 
 /**
- * index - Return a list of all the keys
+ * read - Return a list of hospitals
  *
  * The method builds a query search object from the parameters of the query
  * string.  The object is passed to the Mongoose .find() method and the query
@@ -25,13 +25,13 @@ const Hospital = require('../models/hospital-model')
  * @param res
  * @returns {Promise<void>}
  */
-exports.index = async (req, res) => {
+exports.read = async (req, res) => {
   // searchObj is a JSON object that contains the search criteria
   let searchObj = {}
 
   // Check each possible parameter
-  if (req.query.providerid)
-    searchObj.providerId = req.query.providerid
+  if (req.query.providerId)
+    searchObj.providerId = req.query.providerId
   if (req.query.name)
     searchObj.name = req.query.name
   if (req.query.city)
@@ -44,17 +44,12 @@ exports.index = async (req, res) => {
     searchObj.county = req.query.county
 
   // Query the database
-  const hospitals = await Hospital.find(searchObj).exec()
-  res.json({ data: hospitals })
-}
-
-exports.show = async (req, res) => {
-  const hospitals = await Hospital.findById(req.params.id).exec()
+  const hospitals = await Hospitals.find(searchObj).exec()
   res.json({ data: hospitals })
 }
 
 /**
- * store - Create a new resource and save it in the database
+ * create - Create a new resource and save it in the database
  *
  * This method creates a new hospital object using the data from the request
  * body and the hospital model.  The new object is saved in the database.  The
@@ -65,8 +60,8 @@ exports.show = async (req, res) => {
  * @param res
  * @returns {Promise<void>}
  */
-exports.store = async (req, res) => {
-  const hospital = new Hospital(req.body)
+exports.create = async (req, res) => {
+  const hospital = new Hospitals(req.body)
   await hospital.save()
   res.location(hospital._id)
   res.status(config.http.status.created).json({ data: hospital })
@@ -88,7 +83,7 @@ exports.store = async (req, res) => {
  */
 exports.patch = async (req, res) => {
   const options = { new: true, upsert: true, setDefaultsOnInsert: true }
-  const hospital = await Hospital.findByIdAndUpdate(req.params.id, req.body, options).exec()
+  const hospital = await Hospitals.findByIdAndUpdate(req.params.id, req.body, options).exec()
   res.status(config.http.status.ok).json({ data: hospital })
 }
 
@@ -100,7 +95,7 @@ exports.patch = async (req, res) => {
  * @returns {Promise<void>}
  */
 exports.update = async (req, res) => {
-  const hospital = await Hospital.findById(req.params.id).exec()
+  const hospital = await Hospitals.findById(req.params.id).exec()
   if (hospital) {
     // If the user did not provide a providerID, add it
     if (!req.body.providerId)
@@ -122,8 +117,8 @@ exports.update = async (req, res) => {
  * @param res
  * @returns {Promise<void>}
  */
-exports.destroy = async (req, res) => {
-  await Hospital.findByIdAndDelete(req.params.id).exec()
+exports.delete = async (req, res) => {
+  await Hospitals.findByIdAndDelete(req.params.id).exec()
   res.status(config.http.status.no_content).send()
 }
 

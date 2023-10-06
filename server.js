@@ -31,6 +31,13 @@ mongoose.connect(config.db.connection_string, config.db.connection_options)
 // Fail on connection error.
 mongoose.connection.on('error', error => { throw error })
 
+/* ---- *\
+|* CORS *|
+\* ---- */
+
+const cors = require('cors')
+server.use(cors())
+
 /* ------ *\
 |* Helmet *|
 \* ------ */
@@ -56,7 +63,7 @@ server.use(bodyParser.urlencoded({ extended: false }))
 const apiRoutes = require('./src/routes/api-routes')
 
 // All the routes are defined in apiRoutes and bound to /api
-server.use('/api', apiRoutes)
+server.use('/api/' + process.env.API_VERSION + '/', apiRoutes)
 
 /* -------------- *\
 |* Error handling *|
@@ -69,5 +76,8 @@ server.use(errorHandlers.invalidRoute)
 
 // Handle mongoose errors
 server.use(errorHandlers.validationErrors)
+
+// Replace the default express error handler
+server.use(errorHandlers.jsonErrorHandler)
 
 module.exports = server

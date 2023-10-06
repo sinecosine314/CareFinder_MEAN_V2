@@ -10,6 +10,7 @@
 const express = require ( 'express' );
 
 const hospitalsController = require( '../controllers/hospitals-controller' );
+const accessTokenRequired = require('../middleware/access-token-required')
 const providerIdRequired = require('../middleware/providerId-required')
 const { catchErrors } = require('../middleware/error-handlers')
 
@@ -19,40 +20,38 @@ const router = express.Router();
 // -----------------------------------
 
 // Remember that here, the '/' is relative to the '/hospitals'
-// route defined in server.js as "app.use('/hospitals', hospitals);"
+// route defined in api-routes.js as "router.use('/hospitals', hospitalsRoutes)"
+
+// All routes require a valid access token, i.e., the user must be logged in.
 
 // todo: should be an admin-only route
 // (C)reate a new hospital with given information
 // POST /hospitals
 // Example: POST http://localhost:3000/hospitals
 //router.post('/', catchErrors(hospitalsController.store), apikeyRequired)
-router.post('/', providerIdRequired, catchErrors(hospitalsController.store))
+router.post('/', accessTokenRequired, providerIdRequired, catchErrors(hospitalsController.create))
 
 // (R)ead a hospital(s) in various ways
 // GET /hospitals?<list of query parameters>
 // Example: GET http://localhost:3000/hospitals?city=CHICAGO
-router.get('/', catchErrors(hospitalsController.index))
-
-// (R)ead a specific hospital
-// GET /hospitals/{hospitalId}
-// Example: GET http://localhost:3000/hospitals/5e10bda58d57e80faa871867
-router.get('/:id', catchErrors(hospitalsController.show))
+//router.get('/', accessTokenRequired, catchErrors(hospitalsController.read))
+router.get('/', catchErrors(hospitalsController.read))
 
 // todo: should be an admin-only route
 // (U)pdate/create a specific hospital with given information
 // PUT /hospitals/{hospitalId}
 // Example: POST http://localhost:3000/hospitals/5e10bda58d57e80faa871867
-router.put('/:id', providerIdRequired, catchErrors(hospitalsController.update))
+router.put('/:id', accessTokenRequired, providerIdRequired, catchErrors(hospitalsController.update))
 
 // todo: should be an admin-only route
 // (U)pdate-Patch a hospital with given information
 // PATCH /hospitals/{hospitalid}
-router.patch ( '/:id', catchErrors(hospitalsController.patch))
+router.patch ( '/:id', accessTokenRequired, catchErrors(hospitalsController.patch))
 
 // todo: should be an admin-only route
 // (D)elete a hospital by its hospitalid
 // Example: DELETE http://localhost:3000/hospitals?id=5e0a9e3245a13ed2ba4e8d4d
-router.delete('/:id', catchErrors(hospitalsController.destroy))
+router.delete('/:id', accessTokenRequired, catchErrors(hospitalsController.delete))
 
 module.exports = router;
 

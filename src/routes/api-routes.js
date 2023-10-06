@@ -1,16 +1,17 @@
 /**
  * api-routes.js - Application routing
  *
- * Cop-yright notice at the end of the file.
+ * Copyright notice at the end of the file.
  *
  * @type {createApplication}
  */
 
 const express = require('express')
-//const passport = require('passport')
 
 // Common routes
 const hospitalsRoutes = require('./hospitals-routes')
+const usersRoutes = require('./users-routes')
+const authRoutes = require('./auth-routes')
 
 // Middleware
 //const pagination = require('../middleware/pagination')
@@ -19,6 +20,8 @@ const hospitalsRoutes = require('./hospitals-routes')
 const router = express.Router()
 
 router.use('/hospitals', hospitalsRoutes)
+router.use('/users', usersRoutes)
+router.use('/auth', authRoutes)
 
 module.exports = router
 

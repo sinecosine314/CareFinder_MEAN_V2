@@ -26,9 +26,7 @@ exports.catchErrors = (action) => {
  * Handle any invalid routes.
  */
 exports.invalidRoute = (req, res, next) => {
-  const thiserr = error.getError(config.http.status.not_found, config.messages.error.router)
-  //const err = new Error(config.messages.error.router)
-  //err.status = config.http.status.not_found
+  const thiserr = error.getError(config.http.status.not_found, config.messages.error.router.invalid_route)
   next(thiserr)
 }
 
@@ -40,10 +38,38 @@ exports.validationErrors = (err, req, res, next) => {
   if (!err.errors) {
     return next(err)
   }
-  const thiserr = error.getError(config.http.status.bad_request, config.messages.error.db.validation_error)
-  thiserr.error = err.errors
-  thiserr.data = {}
-  res.json(thiserr)
+  returnError(err,res)
+}
+
+/**
+ * jsonErrorHandler - replace the default express error handler
+ * @param err
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+exports.jsonErrorHandler = (err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err)
+  }
+  returnError(err,res)
+}
+
+/**
+ *
+ * @param err
+ * @param res
+ */
+function returnError(err,res) {
+  const thiserr = error.getError(config.http.status.internal_server_error, config.messages.error.system.internal_server_error)
+  if (err.status)
+    thiserr.status = err.status
+  if (err.message)
+    thiserr.message = err.message
+  if (err.error)
+    thiserr.error = err.error
+  res.status(thiserr.status).json({ error: thiserr })
 }
 
 /*

@@ -11,7 +11,7 @@ const config = require('../helpers/config-helper');
 
 // Define the hospital schema
 const definition = {
-  'providerId': { type: Number, required: config.messages.error.db.missing_providerId },
+  'providerId': { type: String, required: config.messages.error.db.missing_providerId },
   'name': { type: String, trim: true },
   'address': { type: String, trim: true },
   'city': { type: String, trim: true },

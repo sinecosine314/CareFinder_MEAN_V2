@@ -5,6 +5,11 @@
  *
  */
 
+const serverError = {
+  status: 0,
+  message: ""
+}
+
 /**
  * Builds and returns an error object.
  * @param status
@@ -12,6 +17,7 @@
  * @returns {Error}
  */
 exports.getError = (status, message) => {
+  //const retobj = Object.create(serverError)
   const retobj = new Error()
   retobj.status = status
   retobj.message = message
